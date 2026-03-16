@@ -16,9 +16,13 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     const combinedTodos = todosFromServer.map(todo => {
-      const user = usersFromServer.find(u => u.id === todo.userId);
+      const user = usersFromServer.find(
+        userRecord => userRecord.id === todo.userId,
+      );
+
       return { ...todo, user };
     });
+
     setTodos(combinedTodos);
     setUsers(usersFromServer);
   }, []);
@@ -33,14 +37,14 @@ export const App: React.FC = () => {
       return;
     }
 
-    const selectedUser = users.find(u => u.id === +selectedUserId);
+    const selectedUser = users.find(user => user.id === +selectedUserId);
 
     if (!selectedUser) {
       return;
     }
 
     const newTodo: Todo = {
-      id: Math.max(...todos.map(t => t.id)) + 1,
+      id: todos.length > 0 ? Math.max(...todos.map(todo => todo.id)) + 1 : 1,
       title,
       completed: false,
       userId: +selectedUserId,
@@ -65,11 +69,12 @@ export const App: React.FC = () => {
               data-cy="titleInput"
               placeholder="Enter a title"
               value={title}
-              onChange={e => {
-                const sanitizedTitle = e.target.value.replace(
+              onChange={event => {
+                const sanitizedTitle = event.target.value.replace(
                   /[^a-zA-Zа-яА-Я0-9\s]/g,
                   '',
                 );
+
                 setTitle(sanitizedTitle);
                 setTitleError(false);
               }}
@@ -84,8 +89,8 @@ export const App: React.FC = () => {
             <select
               data-cy="userSelect"
               value={selectedUserId}
-              onChange={e => {
-                setSelectedUserId(e.target.value);
+              onChange={event => {
+                setSelectedUserId(event.target.value);
                 setUserError(false);
               }}
             >
